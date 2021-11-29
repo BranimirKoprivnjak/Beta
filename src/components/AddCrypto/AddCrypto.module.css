@@ -1,0 +1,16 @@
+.data {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  /* Title and button wont be scrollable, 
+  if u want it scrollable overflow should be on whole model */
+  overflow: scroll;
+  max-height: 80vh;
+}
+
+.header h2 {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: white;
+}

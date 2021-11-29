@@ -1,5 +1,45 @@
+import { useState } from 'react';
+
+import classes from './App.module.css';
+import Modal from './components/UI/Modal';
+
 const App = () => {
-  return <p>test</p>;
+  const [modalIsShown, setModalIsShown] = useState(false);
+
+  const showModalHandler = () => {
+    setModalIsShown(true);
+  };
+
+  const hideModalHandler = () => {
+    setModalIsShown(false);
+  };
+
+  return (
+    <>
+      {modalIsShown && <Modal onClose={hideModalHandler} />}
+      <div className={classes.wrapper}>
+        <h1 className={classes.heading}>Beta</h1>
+        <h2 className={classes.heading}>
+          You're personalized cryptocurrency tracker!
+        </h2>
+      </div>
+      <div className={classes.container}>
+        <div className={classes.crypto}>
+          My cryptocurrencies (2)
+          <button className={classes.button} onClick={showModalHandler}>
+            Add+
+          </button>
+        </div>
+        <div className={classes.currency}>
+          Currency Preference
+          <select className={classes.dropdown}>
+            <option>usd</option>
+            <option>eur</option>
+          </select>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default App;
