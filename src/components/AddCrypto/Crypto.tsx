@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { CheckedCryptos } from '../../models/models';
 import classes from './Crypto.module.css';
 

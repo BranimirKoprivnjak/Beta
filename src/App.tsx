@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useCustomSelector } from './hooks/hooks';
 
 import classes from './App.module.css';
 import Modal from './components/UI/Modal';
+import CryptoItem from './components/CryptoItem/CryptoItem';
 
 const App = () => {
+  const state = useCustomSelector(statePara => statePara.state);
   const [modalIsShown, setModalIsShown] = useState(false);
 
   const showModalHandler = () => {
@@ -37,6 +40,11 @@ const App = () => {
             <option>eur</option>
           </select>
         </div>
+      </div>
+      <div className={classes.cryptos}>
+        {state.array.map(id => (
+          <CryptoItem id={id} key={id} />
+        ))}
       </div>
     </>
   );

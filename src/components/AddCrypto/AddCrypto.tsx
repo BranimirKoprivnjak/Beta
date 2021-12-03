@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react';
+import { useCustomDispatch } from '../../hooks/hooks';
 import Crypto from './Crypto';
 import { State } from '../../models/models';
 
 import classes from './AddCrypto.module.css';
+import { stateActions } from '../../store/redux';
 
 const AddCrypto = () => {
-  const [checkedCryptos, setCheckedCryptos] = useState<any[]>([]);
+  // redux
+  const dispatch = useCustomDispatch();
+  // const realState = useCustomSelector(statePara => statePara.state);
+
+  // const [checkedCryptos, setCheckedCryptos] = useState<any[]>([]);
   const [state, setState] = useState<State[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>();
 
   const changeHandler = (id: string) => {
-    setCheckedCryptos(prevState => {
-      if (!prevState.includes(id)) return [id, ...prevState];
-      return prevState.filter(item => item !== id);
-    });
+    dispatch(stateActions.changeCrypto(id));
   };
+
+  // const changeHandler = (id: string) => {
+  //   setCheckedCryptos(prevState => {
+  //     if (!prevState.includes(id)) return [id, ...prevState];
+  //     return prevState.filter(item => item !== id);
+  //   });
+  // };
 
   useEffect(() => {
     const fetchData = async () => {
