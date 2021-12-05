@@ -7,7 +7,9 @@ import CryptoItem from './components/CryptoItem/CryptoItem';
 
 const App = () => {
   const state = useCustomSelector(statePara => statePara.state);
-  const [modalIsShown, setModalIsShown] = useState(false);
+  const [modalIsShown, setModalIsShown] = useState(
+    state.cryptocurrencies.length === 0 ? true : false
+  );
 
   const showModalHandler = () => {
     setModalIsShown(true);
@@ -42,7 +44,7 @@ const App = () => {
         </div>
       </div>
       <div className={classes.cryptos}>
-        {state.array.map(id => (
+        {state.cryptocurrencies.map(id => (
           <CryptoItem id={id} key={id} />
         ))}
       </div>

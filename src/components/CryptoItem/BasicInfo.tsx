@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { CryptoItemType } from '../../models/models';
+import { MarketData } from '../../models/models';
 
 import classes from './BasicInfo.module.css';
 
 const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
-  const [info, setInfo] = useState<CryptoItemType>();
+  const [marketData, setMarketData] = useState<MarketData>();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,40 +33,42 @@ const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
         changePerc24h,
       };
 
-      setInfo(filteredData);
+      setMarketData(filteredData);
     };
     fetchData();
   }, [id]);
 
   // idea -> put this in reducer or state
   let style = { change24h: '', changePerc24h: '' };
-  if (info !== undefined) {
-    style.change24h = info?.change24h > 0 ? 'green' : 'red';
-    style.changePerc24h = info?.changePerc24h > 0 ? 'green' : 'red';
+  if (marketData !== undefined) {
+    style.change24h = marketData?.change24h > 0 ? 'green' : 'red';
+    style.changePerc24h = marketData?.changePerc24h > 0 ? 'green' : 'red';
   }
 
   return (
     <div className={classes.container}>
       <div className={classes.header}>
-        <img src={info?.logo} className={classes.logo} />
-        <p>{info?.name}</p>
+        <img src={marketData?.logo} className={classes.logo} />
+        <p>{marketData?.name}</p>
       </div>
-      <p>Price: {info?.price}</p>
+      <p>Price: {marketData?.price}</p>
       <p>
         Change:{' '}
         <span style={{ color: style.change24h }}>
-          {info?.change24h.toFixed(2)}
+          {marketData?.change24h.toFixed(2)}
         </span>
       </p>
       <p>
         %Change:{' '}
         <span style={{ color: style.changePerc24h }}>
-          {info?.changePerc24h.toFixed(2)}%
+          {marketData?.changePerc24h.toFixed(2)}%
         </span>
       </p>
-      <p>Market cap: {info?.marketCap}</p>
+      <p>Market cap: {marketData?.marketCap}</p>
     </div>
   );
 };
 
 export default BasicInfo;
+
+// {' '} add space between words

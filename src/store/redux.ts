@@ -1,22 +1,19 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export interface RealState {
-  array: string[];
+export interface State {
+  cryptocurrencies: string[];
 }
 
-const initialState: RealState = {
-  array: [],
+const initialState: State = {
+  cryptocurrencies: [],
 };
 
 const stateSlice = createSlice({
   name: 'state',
   initialState: initialState,
   reducers: {
-    changeCrypto(state: RealState, action: PayloadAction<string>) {
-      const id = action.payload,
-        array = state.array;
-      if (!array.includes(id)) array.push(id);
-      else array.splice(array.indexOf(id), 1);
+    changeCrypto(state: State, action: PayloadAction<string[]>) {
+      state.cryptocurrencies = action.payload;
     },
   },
 });

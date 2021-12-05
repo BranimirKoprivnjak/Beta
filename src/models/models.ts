@@ -1,6 +1,6 @@
 import store from '../store/redux';
 
-export interface State {
+export interface AvailableCryptos {
   id: string;
   name: string;
   image: string;
@@ -13,13 +13,17 @@ export interface CheckedCryptos {
   onChange: (id: string) => void;
 }
 
-export interface CryptoItemType {
+export interface MarketData {
   logo: string;
   name: string;
   price: number;
   marketCap: number;
   change24h: number;
   changePerc24h: number;
+}
+
+export interface OnClose {
+  onClose: () => void;
 }
 
 // custom redux hooks types, https://redux.js.org/usage/usage-with-typescript

@@ -1,77 +1,76 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCustomDispatch } from '../../hooks/hooks';
 import Crypto from './Crypto';
-import { State } from '../../models/models';
+import { AvailableCryptos, OnClose } from '../../models/models';
 
 import classes from './AddCrypto.module.css';
 import { stateActions } from '../../store/redux';
+import ErrorUI from '../UI/ErrorUI';
+import useHttp from '../../hooks/use-http';
+import Loader from '../UI/Loader';
 
-const AddCrypto = () => {
-  // redux
+const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
   const dispatch = useCustomDispatch();
-  // const realState = useCustomSelector(statePara => statePara.state);
 
-  // const [checkedCryptos, setCheckedCryptos] = useState<any[]>([]);
-  const [state, setState] = useState<State[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>();
+  // picked cryptos
+  const [checkedCryptos, setCheckedCryptos] = useState<string[]>([]);
+  // list of all cryptos from api
+  const [availableCryptos, setAvailableCryptos] = useState<AvailableCryptos[]>(
+    []
+  );
+  const [pagination, setPagination] = useState<number>(1);
+  const { isLoading, error, fetchData } = useHttp();
 
-  const changeHandler = (id: string) => {
-    dispatch(stateActions.changeCrypto(id));
+  const addCrypto = () => {
+    dispatch(stateActions.changeCrypto(checkedCryptos));
+    onClose();
   };
 
-  // const changeHandler = (id: string) => {
-  //   setCheckedCryptos(prevState => {
-  //     if (!prevState.includes(id)) return [id, ...prevState];
-  //     return prevState.filter(item => item !== id);
-  //   });
-  // };
+  const changeHandler = (id: string) => {
+    setCheckedCryptos(prevState => {
+      if (!prevState.includes(id)) return [id, ...prevState];
+      return prevState.filter(item => item !== id);
+    });
+  };
+
+  const scrollHandler = (e: React.UIEvent<HTMLUListElement>) => {
+    const target = e.currentTarget;
+    if (target.scrollHeight - target.scrollTop === target.clientHeight)
+      setPagination(prev => prev + 1);
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false'
-      );
-
-      if (!response.ok) throw new Error('Something went wrong!');
-
-      const data = await response.json();
-
-      const filteredData = [];
+    const filterData = (data: any) => {
+      const filteredData: AvailableCryptos[] = [];
       for (const item of data) {
         const { id, image, name } = item;
         filteredData.push({ id, image, name });
       }
-      setState(filteredData);
-      setIsLoading(false);
+      setAvailableCryptos(prev => [...prev, ...filteredData]);
     };
-    fetchData().catch(error => {
-      setIsLoading(false);
-      setError(error.message);
-    });
-  }, []);
 
-  if (isLoading)
-    return (
-      <section>
-        <p>Loading...</p>
-      </section>
+    fetchData(
+      {
+        url: `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=${pagination}&sparkline=false`,
+      },
+      filterData
     );
+  }, [pagination, fetchData]);
 
-  if (error)
-    return (
-      <section>
-        <p>{error}</p>
-      </section>
-    );
+  if (error) return <ErrorUI message={error} />;
 
   return (
     <>
+      <button className={classes.close} onClick={onClose}></button>
       <div className={classes.header}>
         <h2>Add a cryptocurrency</h2>
+        <p>
+          Add a cryptocurrencies you would like to track. We'll add it to your
+          personalized tab.
+        </p>
       </div>
-      <ul className={classes.data}>
-        {state.map(item => (
+      <ul className={classes.list} onScroll={scrollHandler}>
+        {availableCryptos.map(item => (
           <Crypto
             key={item.id}
             id={item.id}
@@ -81,7 +80,10 @@ const AddCrypto = () => {
           />
         ))}
       </ul>
-      <button>Add a cryptocurrency</button>
+      {isLoading && <Loader />}
+      <button onClick={addCrypto} className={classes.button}>
+        Add a Cryptocurrency
+      </button>
     </>
   );
 };

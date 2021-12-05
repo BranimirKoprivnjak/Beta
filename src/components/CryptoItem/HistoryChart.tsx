@@ -48,8 +48,6 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
       ) as HTMLCanvasElement;
       const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-      console.log(prices);
-
       const historyChart = new Chart(ctx, {
         type: lineChartType,
         data: formatOptions(prices),
