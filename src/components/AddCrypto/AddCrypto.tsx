@@ -8,6 +8,7 @@ import { stateActions } from '../../store/redux';
 import ErrorUI from '../UI/ErrorUI';
 import useHttp from '../../hooks/use-http';
 import Loader from '../UI/Loader';
+import Button from '../UI/Button';
 
 const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
   const dispatch = useCustomDispatch();
@@ -81,9 +82,9 @@ const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
         ))}
       </ul>
       {isLoading && <Loader />}
-      <button onClick={addCrypto} className={classes.button}>
+      <Button onClick={addCrypto} cssClass={null}>
         Add a Cryptocurrency
-      </button>
+      </Button>
     </>
   );
 };

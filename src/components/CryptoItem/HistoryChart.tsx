@@ -1,13 +1,18 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 import { Chart, ChartType, ChartData, registerables } from 'chart.js';
+import useHttp from '../../hooks/use-http';
+import { useCustomSelector } from '../../hooks/hooks';
 Chart.register(...registerables);
 
 const lineChartType: ChartType = 'line';
 
 const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
-  const chart = useRef<HTMLCanvasElement>(null);
+  const chart = useRef<Chart | null>(null);
   const [prices, setPrices] = useState<number[]>([]);
+
+  const { fetchData } = useHttp();
+  const currency = useCustomSelector(statePara => statePara.state.currency);
 
   const formatOptions = (data: number[]): ChartData => ({
     labels: new Array(14).fill('Nov 17'),
@@ -21,14 +26,19 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
     ],
   });
 
+  const canvasCallback = useCallback((canvas: HTMLCanvasElement | null) => {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    if (ctx) {
+      chart.current = new Chart(ctx, {
+        type: lineChartType,
+        data: formatOptions(prices),
+      });
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=usd&days=14&interval=daily`
-      );
-
-      const data = await response.json();
-
+    const filterData = (data: any) => {
       const chartData = [];
       for (const value of data?.prices) {
         const [_, price] = value;
@@ -37,30 +47,25 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
 
       setPrices(chartData);
     };
-    fetchData();
-  }, [id]);
+
+    fetchData(
+      {
+        url: `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=14&interval=daily`,
+      },
+      filterData
+    );
+  }, [id, currency, fetchData]);
 
   useEffect(() => {
-    // prevents from creating chart when prices array is empty
-    if (prices.length > 1) {
-      const canvas = document.getElementById(
-        `history-chart-${id}`
-      ) as HTMLCanvasElement;
-      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-      const historyChart = new Chart(ctx, {
-        type: lineChartType,
-        data: formatOptions(prices),
-        // options: { responsive: true },
-      });
-      // chart?.current?.update();
-      // historyChart.update();
+    if (chart.current) {
+      chart.current.data = formatOptions(prices);
+      chart.current.update();
     }
-  }, [prices, id]);
+  }, [prices]);
 
   return (
     <div style={{ width: '500px' }}>
-      <canvas ref={chart} id={`history-chart-${id}`}></canvas>
+      <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
     </div>
   );
 };

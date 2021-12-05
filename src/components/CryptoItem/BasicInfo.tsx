@@ -1,24 +1,25 @@
 import { useEffect, useState } from 'react';
+import { useCustomSelector } from '../../hooks/hooks';
+import useHttp from '../../hooks/use-http';
 
 import { MarketData } from '../../models/models';
 
 import classes from './BasicInfo.module.css';
 
 const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
+  const currency = useCustomSelector(statePara => statePara.state.currency);
   const [marketData, setMarketData] = useState<MarketData>();
 
+  const { fetchData } = useHttp();
+
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`
-      );
-      const data = await response.json();
+    const filterData = (data: any) => {
       const {
         image: { small: logo },
         name,
         market_data: {
-          current_price: { usd: price },
-          market_cap: { usd: marketCap },
+          current_price: { [currency]: price },
+          market_cap: { [currency]: marketCap },
           price_change_24h: change24h,
           price_change_percentage_24h: changePerc24h,
         },
@@ -35,8 +36,14 @@ const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
 
       setMarketData(filteredData);
     };
-    fetchData();
-  }, [id]);
+
+    fetchData(
+      {
+        url: `https://api.coingecko.com/api/v3/coins/${id}?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`,
+      },
+      filterData
+    );
+  }, [id, currency, fetchData]);
 
   // idea -> put this in reducer or state
   let style = { change24h: '', changePerc24h: '' };

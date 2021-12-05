@@ -2,10 +2,12 @@ import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface State {
   cryptocurrencies: string[];
+  currency: string;
 }
 
 const initialState: State = {
   cryptocurrencies: [],
+  currency: 'usd',
 };
 
 const stateSlice = createSlice({
@@ -14,6 +16,9 @@ const stateSlice = createSlice({
   reducers: {
     changeCrypto(state: State, action: PayloadAction<string[]>) {
       state.cryptocurrencies = action.payload;
+    },
+    updateCurrency(state: State, action: PayloadAction<string>) {
+      state.currency = action.payload;
     },
   },
 });

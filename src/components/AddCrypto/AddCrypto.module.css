@@ -16,23 +16,6 @@
   color: white;
 }
 
-.button {
-  background: none;
-  cursor: pointer;
-  border: 0.0625rem solid rgb(0, 120, 199);
-  background-color: rgb(0, 90, 149);
-  color: rgb(232, 230, 227);
-  border-radius: 1.5rem;
-  padding: 0.6875rem 1.4375rem;
-  font-weight: bold;
-  transition: color 240ms ease, background-color 240ms ease,
-    border-color 240ms ease, box-shadow 240ms ease;
-}
-
-.button:hover {
-  background-color: rgb(0, 38, 108);
-}
-
 /* Custom scrollbar */
 /* width */
 ::-webkit-scrollbar {
