@@ -1,6 +1,6 @@
 .cryptos {
   width: 70%;
-  margin: 25px auto 0;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }

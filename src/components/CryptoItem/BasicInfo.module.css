@@ -2,9 +2,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgb(28, 31, 32);
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   color: rgb(203, 199, 192);
   width: 20%;
   padding: 10px 0 10px 0;
