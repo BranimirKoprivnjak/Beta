@@ -10,9 +10,9 @@
 
 .modal {
   position: fixed;
-  top: 5vh;
+  top: 7vh;
   left: 5%;
-  width: 90%;
+  width: 85%;
   background-color: rgba(24, 26, 27, 1);
   padding: 1rem;
   border-radius: 14px;
@@ -24,7 +24,8 @@
 @media (min-width: 768px) {
   .modal {
     width: 40rem;
-    left: calc(50% - 20rem);
+    /* Always calculate middle */
+    left: calc(50% - 20.8rem);
   }
 }
 

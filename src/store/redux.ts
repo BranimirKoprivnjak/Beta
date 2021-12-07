@@ -15,7 +15,7 @@ const stateSlice = createSlice({
   initialState: initialState,
   reducers: {
     changeCrypto(state: State, action: PayloadAction<string[]>) {
-      state.cryptocurrencies.push(...action.payload);
+      state.cryptocurrencies = action.payload;
     },
     updateCurrency(state: State, action: PayloadAction<string>) {
       state.currency = action.payload;

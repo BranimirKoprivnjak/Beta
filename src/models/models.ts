@@ -6,10 +6,11 @@ export interface AvailableCryptos {
   image: string;
 }
 
-export interface CheckedCryptos {
+export interface Crypto {
   id: string;
   name: string;
   image: string;
+  isChecked: boolean;
   onChange: (id: string) => void;
 }
 

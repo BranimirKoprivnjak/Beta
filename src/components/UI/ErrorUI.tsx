@@ -1,7 +1,10 @@
-const ErrorUI: React.FC<{ message: string }> = ({ message }) => {
+import Button from './Button';
+import classes from './ErrorUI.module.css';
+
+const ErrorUI: React.FC<{ message: string }> = props => {
   return (
-    <section>
-      <p>{message}</p>
+    <section className={classes.error}>
+      <p>{props.message}</p>
     </section>
   );
 };
