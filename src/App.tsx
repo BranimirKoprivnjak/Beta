@@ -4,49 +4,40 @@ import { useCustomDispatch, useCustomSelector } from './hooks/hooks';
 import classes from './App.module.css';
 import Modal from './components/UI/Modal';
 import CryptoItem from './components/CryptoItem/CryptoItem';
-import Button from './components/UI/Button';
 import { stateActions } from './store/redux';
-
-const SUPPORTED_CURRENCIES = ['usd', 'eur', 'gbp', 'rub'];
+import { SUPPORTED_CURRENCIES } from './config/config';
 
 const App = () => {
-  const state = useCustomSelector(statePara => statePara.state);
+  const cryptocurrencies = useCustomSelector(s => s.state.cryptocurrencies);
   const dispatch = useCustomDispatch();
-  const { cryptocurrencies } = state;
 
-  const [modalIsShown, setModalIsShown] = useState(
-    cryptocurrencies.length === 0 ? true : false
-  );
+  const isEmpty = cryptocurrencies.length ? false : true;
+  const [modalIsShown, setModalIsShown] = useState(isEmpty);
 
   const currencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     dispatch(stateActions.updateCurrency(event.currentTarget.value));
   };
 
-  const showModalHandler = () => {
-    setModalIsShown(true);
-  };
-
-  const hideModalHandler = () => {
-    setModalIsShown(false);
+  const toggleModalHandler = () => {
+    setModalIsShown(prev => !prev);
   };
 
   return (
     <>
-      {modalIsShown && <Modal onClose={hideModalHandler} />}
+      {modalIsShown && <Modal onClose={toggleModalHandler} />}
       <div className={classes.toolbar}>
         <p>My cryptocurrencies({cryptocurrencies.length})</p>
         <div className={classes.utility}>
           <label>
-            Currency Preference
-            <select onChange={currencyChange}>
+            <select onChange={currencyChange} className={classes.dropdown}>
               {SUPPORTED_CURRENCIES.map(item => (
                 <option key={item}>{item}</option>
               ))}
             </select>
           </label>
-          <Button onClick={showModalHandler} cssClass={null}>
-            Add+
-          </Button>
+          <a className={classes.button} onClick={toggleModalHandler}>
+            +Add a cryptocurrency
+          </a>
         </div>
       </div>
       <div className={classes.cryptos}>

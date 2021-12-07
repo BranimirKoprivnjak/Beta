@@ -25,7 +25,7 @@
   .modal {
     width: 40rem;
     /* Always calculate middle */
-    left: calc(50% - 20.8rem);
+    left: calc(50% - 21.1rem);
   }
 }
 

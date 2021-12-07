@@ -1,20 +1,39 @@
-.cryptos {
-  width: 70%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}
-
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding-top: 1rem;
   width: 70%;
   margin: 0 auto;
   color: white;
+  font-weight: 300;
 }
 
 .utility {
   display: flex;
   align-items: center;
+}
+
+.dropdown {
+  background-color: rgba(28, 31, 32, 1);
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.8rem;
+}
+
+.button {
+  cursor: pointer;
+  color: rgb(74, 183, 255);
+  font-weight: 500;
+}
+
+.button:hover {
+  text-decoration: underline solid rgb(74, 183, 255);
+}
+
+.cryptos {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }
