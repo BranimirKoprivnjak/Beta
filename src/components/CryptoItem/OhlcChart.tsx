@@ -72,7 +72,7 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
   }, [data]);
 
   return (
-    <div style={{ width: '500px' }}>
+    <div>
       <canvas ref={canvasCallback} id={`ohlc-chart-${id}`}></canvas>
     </div>
   );

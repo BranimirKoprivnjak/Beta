@@ -64,7 +64,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
   }, [prices]);
 
   return (
-    <div style={{ width: '500px' }}>
+    <div>
       <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
     </div>
   );

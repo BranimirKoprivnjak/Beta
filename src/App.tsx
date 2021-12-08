@@ -3,9 +3,12 @@ import { useCustomDispatch, useCustomSelector } from './hooks/hooks';
 
 import classes from './App.module.css';
 import Modal from './components/UI/Modal';
-import CryptoItem from './components/CryptoItem/CryptoItem';
 import { stateActions } from './store/redux';
 import { SUPPORTED_CURRENCIES } from './config/config';
+import Container from './components/CryptoItem/Container';
+
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const App = () => {
   const cryptocurrencies = useCustomSelector(s => s.state.cryptocurrencies);
@@ -23,7 +26,7 @@ const App = () => {
   };
 
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       {modalIsShown && <Modal onClose={toggleModalHandler} />}
       <div className={classes.toolbar}>
         <p>My cryptocurrencies({cryptocurrencies.length})</p>
@@ -40,12 +43,8 @@ const App = () => {
           </a>
         </div>
       </div>
-      <div className={classes.cryptos}>
-        {cryptocurrencies.map(id => (
-          <CryptoItem id={id} key={id} />
-        ))}
-      </div>
-    </>
+      <Container />
+    </DndProvider>
   );
 };
 

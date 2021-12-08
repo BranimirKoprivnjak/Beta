@@ -27,6 +27,21 @@ export interface OnClose {
   onClose: () => void;
 }
 
+export const ItemTypes = {
+  CARD: 'card',
+};
+
+export interface CardProps {
+  id: string;
+  moveCard: (id: string, to: number) => void;
+  findCard: (id: string) => { index: number };
+}
+
+export interface Item {
+  id: string;
+  originalIndex: number;
+}
+
 // custom redux hooks types, https://redux.js.org/usage/usage-with-typescript
 export type RootState = ReturnType<typeof store.getState>;
 export type Dispatch = typeof store.dispatch;
