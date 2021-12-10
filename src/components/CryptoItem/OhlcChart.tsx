@@ -30,7 +30,6 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
         label: '# of Votes',
         data,
         backgroundColor: 'red',
-        borderColor: 'blue',
       },
     ],
   });
@@ -42,6 +41,37 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
       chart.current = new Chart(ctx, {
         type: lineChartType,
         data: formatOptions(data),
+        options: {
+          // responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                // display: false,
+                maxTicksLimit: 3,
+                maxRotation: 0,
+                minRotation: 0,
+              },
+            },
+            y: {
+              grid: {
+                display: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'OHLC Chart',
+            },
+          },
+        },
       });
     }
   }, []);
@@ -49,9 +79,12 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
   useEffect(() => {
     const filterData = (data: any) => {
       const chartData: any[] = [];
-      for (const value of data) {
-        const [time, open, high, low, close] = value;
-        chartData.push({ x: time, o: open, h: high, l: low, c: close });
+      for (let i = 0; i < data.length; i++) {
+        // data is from each 4 hours, filter to be once a day
+        if (i % 6 === 0) {
+          const [time, open, high, low, close] = data[i];
+          chartData.push({ x: time, o: open, h: high, l: low, c: close });
+        }
       }
       setData(chartData);
     };
@@ -72,7 +105,7 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
   }, [data]);
 
   return (
-    <div>
+    <div style={{ position: 'relative', width: '27vw' }}>
       <canvas ref={canvasCallback} id={`ohlc-chart-${id}`}></canvas>
     </div>
   );

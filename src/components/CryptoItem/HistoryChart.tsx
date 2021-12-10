@@ -5,7 +5,7 @@ import useHttp from '../../hooks/use-http';
 import { useCustomSelector } from '../../hooks/hooks';
 Chart.register(...registerables);
 
-const lineChartType: ChartType = 'line';
+const lineChartType: ChartType = 'bar';
 
 const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
   const chart = useRef<Chart | null>(null);
@@ -18,10 +18,9 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
     labels: new Array(14).fill('Nov 17'),
     datasets: [
       {
-        label: '# of Votes',
+        label: 'Price',
         data,
-        backgroundColor: 'red',
-        borderColor: 'blue',
+        backgroundColor: 'rgba(140, 63, 79, 1)',
       },
     ],
   });
@@ -33,6 +32,38 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
       chart.current = new Chart(ctx, {
         type: lineChartType,
         data: formatOptions(prices),
+        options: {
+          // responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              grid: {
+                display: false,
+              },
+              ticks: {
+                // display: false,
+
+                maxTicksLimit: 3,
+                maxRotation: 0,
+                minRotation: 0,
+              },
+            },
+            y: {
+              grid: {
+                display: false,
+              },
+            },
+          },
+          plugins: {
+            legend: {
+              display: false,
+            },
+            title: {
+              display: true,
+              text: 'History Chart',
+            },
+          },
+        },
       });
     }
   }, []);
@@ -64,7 +95,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
   }, [prices]);
 
   return (
-    <div>
+    <div style={{ position: 'relative', width: '27vw' }}>
       <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
     </div>
   );
