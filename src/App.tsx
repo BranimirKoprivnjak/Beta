@@ -5,7 +5,7 @@ import classes from './App.module.css';
 import Modal from './components/UI/Modal';
 import { stateActions } from './store/redux';
 import { SUPPORTED_CURRENCIES } from './config/config';
-import Container from './components/CryptoItem/Container';
+import Container from './components/CryptoTracker/Container';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

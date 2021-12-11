@@ -2,13 +2,13 @@ import { memo, useCallback } from 'react';
 import { useCustomSelector } from '../../hooks/hooks';
 import update from 'immutability-helper';
 import { useDrop } from 'react-dnd';
-import CryptoItem from './CryptoItem';
+import Card from './Card';
 import { useCustomDispatch } from '../../hooks/hooks';
 
-import classes from './Container.module.css';
 import { stateActions } from '../../store/redux';
-
 import { ItemTypes } from '../../models/models';
+
+import classes from './Container.module.css';
 
 const Container: React.FC = memo(function Container() {
   const cryptocurrencies = useCustomSelector(s => s.state.cryptocurrencies);
@@ -18,7 +18,7 @@ const Container: React.FC = memo(function Container() {
 
   const findCard = useCallback(
     (id: string) => {
-      const card = cryptocurrencies.filter(c => `${c}` === id)[0];
+      const [card] = cryptocurrencies.filter(c => `${c}` === id);
       return {
         card,
         index: cryptocurrencies.indexOf(card),
@@ -44,7 +44,7 @@ const Container: React.FC = memo(function Container() {
   return (
     <div className={classes.section} ref={drop}>
       {cryptocurrencies.map(id => (
-        <CryptoItem key={id} id={id} moveCard={moveCard} findCard={findCard} />
+        <Card key={id} id={id} moveCard={moveCard} findCard={findCard} />
       ))}
     </div>
   );

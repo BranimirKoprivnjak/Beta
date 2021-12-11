@@ -1,35 +1,28 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-
+import { useEffect, useState, useRef, useCallback } from 'react';
 import useHttp from '../../hooks/use-http';
 import { useCustomSelector } from '../../hooks/hooks';
 
-import { Chart, ChartType, registerables, ChartData } from 'chart.js';
-import {
-  CandlestickElement,
-  CandlestickController,
-} from 'chartjs-chart-financial';
-
-// @ts-ignore
-import 'chartjs-adapter-moment';
-
-Chart.register(CandlestickElement, CandlestickController);
+import { Chart, ChartType, ChartData, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-const lineChartType: ChartType = 'candlestick';
+const lineChartType: ChartType = 'line';
 
-const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
+const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
   const chart = useRef<Chart | null>(null);
-  const [data, setData] = useState<any[]>([]);
+  const [prices, setPrices] = useState<number[]>([]);
+  const [dates, setDates] = useState<number[]>([]);
 
   const { fetchData } = useHttp();
   const currency = useCustomSelector(statePara => statePara.state.currency);
 
   const formatOptions = (data: number[]): ChartData => ({
+    labels: dates,
     datasets: [
       {
-        label: '# of Votes',
+        label: 'Price',
         data,
-        backgroundColor: 'red',
+        backgroundColor: 'rgba(140, 63, 79, 1)',
+        borderColor: 'rgba(140, 63, 79, 1)',
       },
     ],
   });
@@ -40,20 +33,22 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
     if (ctx) {
       chart.current = new Chart(ctx, {
         type: lineChartType,
-        data: formatOptions(data),
+        data: formatOptions(prices),
         options: {
           // responsive: true,
           maintainAspectRatio: false,
           scales: {
             x: {
-              grid: {
-                display: false,
-              },
+              type: 'timeseries',
               ticks: {
+                // autoSkip: true,
                 // display: false,
-                maxTicksLimit: 3,
+                // maxTicksLimit: 3,
                 maxRotation: 0,
                 minRotation: 0,
+              },
+              grid: {
+                display: false,
               },
             },
             y: {
@@ -68,7 +63,7 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
             },
             title: {
               display: true,
-              text: 'OHLC Chart',
+              text: 'History Chart',
             },
           },
         },
@@ -78,20 +73,24 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     const filterData = (data: any) => {
-      const chartData: any[] = [];
-      for (let i = 0; i < data.length; i++) {
-        // data is from each 4 hours, filter to be once a day
-        if (i % 6 === 0) {
-          const [time, open, high, low, close] = data[i];
-          chartData.push({ x: time, o: open, h: high, l: low, c: close });
-        }
+      const chartData = [],
+        chartLabels = [];
+      for (const value of data?.prices) {
+        const [dates, price] = value;
+        chartData.push(+price.toFixed(2));
+        chartLabels.push(dates);
       }
-      setData(chartData);
+
+      // remove last item
+      chartData.pop();
+      chartLabels.pop();
+      setPrices(chartData);
+      setDates(chartLabels);
     };
 
     fetchData(
       {
-        url: `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=${currency}&days=14`,
+        url: `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=14&interval=daily`,
       },
       filterData
     );
@@ -99,16 +98,17 @@ const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     if (chart.current) {
-      chart.current.data = formatOptions(data);
+      chart.current.data = formatOptions(prices);
+      chart.current.data.labels = dates;
       chart.current.update();
     }
-  }, [data]);
+  }, [prices, dates]);
 
   return (
-    <div style={{ position: 'relative', width: '27vw' }}>
-      <canvas ref={canvasCallback} id={`ohlc-chart-${id}`}></canvas>
+    <div style={{ position: 'relative', width: '28vw', height: '275px' }}>
+      <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
     </div>
   );
 };
 
-export default OhlcChart;
+export default HistoryChart;

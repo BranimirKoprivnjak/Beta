@@ -1,0 +1,72 @@
+.container {
+  display: flex;
+  border-radius: 14px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.33);
+  /* background-color: rgb(24, 26, 27);  */
+  margin-top: 20px;
+  transition: 0.7s;
+}
+
+.grabbable {
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+}
+
+/* Apply a "closed-hand" cursor during drag operation */
+.grabbable:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.toolbox {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+  margin-right: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.settings {
+  width: 20px;
+  height: 20px;
+  background-image: radial-gradient(
+    circle,
+    rgb(160, 152, 139) 2px,
+    transparent 3px
+  );
+  background-size: 100% 33.33%;
+  cursor: pointer;
+  opacity: 0.5;
+  margin-top: 1px;
+}
+
+.settings:hover {
+  opacity: 1;
+}
+
+.close-button {
+  width: 22px;
+  height: 22px;
+  opacity: 0.5;
+}
+.close-button:hover {
+  opacity: 1;
+}
+.close-button:before,
+.close-button:after {
+  position: absolute;
+  right: 0.5rem;
+  content: ' ';
+  height: 22px;
+  width: 2px;
+  background-color: rgb(160, 152, 139);
+}
+.close-button:before {
+  transform: rotate(45deg);
+}
+.close-button:after {
+  transform: rotate(-45deg);
+}

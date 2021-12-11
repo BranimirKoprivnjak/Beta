@@ -12,10 +12,25 @@
   padding: 5px;
 }
 
-.logo {
-  width: 26px;
+.name {
+  display: flex;
+  align-items: center;
 }
 
-.header {
-  display: flex;
+.name p {
+  padding-left: 0.4rem;
+  font-weight: 500;
+}
+
+.name img {
+  width: 26px;
+  height: 26px;
+}
+
+p {
+  font-weight: 300;
+}
+
+p span {
+  font-weight: 500;
 }

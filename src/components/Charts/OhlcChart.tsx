@@ -1,26 +1,35 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
-import { Chart, ChartType, ChartData, registerables } from 'chart.js';
 import useHttp from '../../hooks/use-http';
 import { useCustomSelector } from '../../hooks/hooks';
+
+import { Chart, ChartType, registerables, ChartData } from 'chart.js';
+import {
+  CandlestickElement,
+  CandlestickController,
+} from 'chartjs-chart-financial';
+
+// @ts-ignore
+import 'chartjs-adapter-moment';
+
+Chart.register(CandlestickElement, CandlestickController);
 Chart.register(...registerables);
 
-const lineChartType: ChartType = 'bar';
+const lineChartType: ChartType = 'candlestick';
 
-const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
+const OhlcChart: React.FC<{ id: string }> = ({ id }) => {
   const chart = useRef<Chart | null>(null);
-  const [prices, setPrices] = useState<number[]>([]);
+  const [data, setData] = useState<any[]>([]);
 
   const { fetchData } = useHttp();
   const currency = useCustomSelector(statePara => statePara.state.currency);
 
   const formatOptions = (data: number[]): ChartData => ({
-    labels: new Array(14).fill('Nov 17'),
     datasets: [
       {
-        label: 'Price',
+        label: '# of Votes',
         data,
-        backgroundColor: 'rgba(140, 63, 79, 1)',
+        backgroundColor: 'red',
       },
     ],
   });
@@ -31,7 +40,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
     if (ctx) {
       chart.current = new Chart(ctx, {
         type: lineChartType,
-        data: formatOptions(prices),
+        data: formatOptions(data),
         options: {
           // responsive: true,
           maintainAspectRatio: false,
@@ -42,8 +51,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
               },
               ticks: {
                 // display: false,
-
-                maxTicksLimit: 3,
+                // maxTicksLimit: 3,
                 maxRotation: 0,
                 minRotation: 0,
               },
@@ -60,7 +68,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
             },
             title: {
               display: true,
-              text: 'History Chart',
+              text: 'OHLC Chart',
             },
           },
         },
@@ -70,18 +78,20 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     const filterData = (data: any) => {
-      const chartData = [];
-      for (const value of data?.prices) {
-        const [_, price] = value;
-        chartData.push(+price.toFixed(2));
+      const chartData: any[] = [];
+      for (let i = 0; i < data.length; i++) {
+        // data is from each 4 hours, filter to be once a day
+        if (i % 6 === 0) {
+          const [time, open, high, low, close] = data[i];
+          chartData.push({ x: time, o: open, h: high, l: low, c: close });
+        }
       }
-
-      setPrices(chartData);
+      setData(chartData);
     };
 
     fetchData(
       {
-        url: `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=14&interval=daily`,
+        url: `https://api.coingecko.com/api/v3/coins/${id}/ohlc?vs_currency=${currency}&days=14`,
       },
       filterData
     );
@@ -89,16 +99,16 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
 
   useEffect(() => {
     if (chart.current) {
-      chart.current.data = formatOptions(prices);
+      chart.current.data = formatOptions(data);
       chart.current.update();
     }
-  }, [prices]);
+  }, [data]);
 
   return (
-    <div style={{ position: 'relative', width: '27vw' }}>
-      <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
+    <div style={{ position: 'relative', width: '28vw', height: '275px' }}>
+      <canvas ref={canvasCallback} id={`ohlc-chart-${id}`}></canvas>
     </div>
   );
 };
 
-export default HistoryChart;
+export default OhlcChart;

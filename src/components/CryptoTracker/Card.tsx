@@ -1,19 +1,25 @@
 import { memo } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import BasicInfo from './BasicInfo';
-import classes from './CryptoItem.module.css';
-import HistoryChart from './HistoryChart';
-import OhlcChart from './OhlcChart';
+import MarketData from './MarketData';
+import classes from './Card.module.css';
+import HistoryChart from '../Charts/HistoryChart';
+import OhlcChart from '../Charts/OhlcChart';
+import { useCustomSelector, useCustomDispatch } from '../../hooks/hooks';
 
 import { ItemTypes } from '../../models/models';
 import { CardProps } from '../../models/models';
 import { Item } from '../../models/models';
+import { stateActions } from '../../store/redux';
 
-const CryptoItem: React.FC<CardProps> = memo(function CryptoItem({
+const Card: React.FC<CardProps> = memo(function CryptoItem({
   id,
   moveCard,
   findCard,
 }) {
+  const dispatch = useCustomDispatch();
+  const cryptocurrencies = useCustomSelector(
+    statePara => statePara.state.cryptocurrencies
+  );
   const originalIndex = findCard(id).index;
   const [{ isDragging }, drag] = useDrag(
     () => ({
@@ -44,19 +50,33 @@ const CryptoItem: React.FC<CardProps> = memo(function CryptoItem({
     }),
     [findCard, moveCard]
   );
-
   const opacity = isDragging ? 0 : 1;
+
+  const removeItemHandler = (id: string) => {
+    dispatch(
+      stateActions.changeCrypto(cryptocurrencies.filter(item => item !== id))
+    );
+  };
+
   return (
     <div
       className={`${classes.container} ${classes.grabbable}`}
       ref={node => drag(drop(node))}
       style={{ opacity }}
     >
-      <BasicInfo id={id} />
+      <MarketData id={id} />
       <HistoryChart id={id} />
       <OhlcChart id={id} />
+      <div className={classes.toolbox}>
+        <div className={classes.settings}></div>
+        <a
+          href="#"
+          className={classes['close-button']}
+          onClick={removeItemHandler.bind(null, id)}
+        ></a>
+      </div>
     </div>
   );
 });
 
-export default CryptoItem;
+export default Card;

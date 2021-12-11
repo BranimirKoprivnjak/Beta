@@ -1,27 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useCustomSelector } from '../../hooks/hooks';
+import { getNumber, numberWithCommas } from '../../helpers/helpers';
 import useHttp from '../../hooks/use-http';
 
-import classes from './BasicInfo.module.css';
+import classes from './MarketData.module.css';
 
-const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
+const MarketData: React.FC<{ id: string }> = ({ id }) => {
   const currency = useCustomSelector(statePara => statePara.state.currency);
   const [marketData, setMarketData] = useState<any>();
 
   const { fetchData } = useHttp();
-
-  function getNumber(num: number) {
-    var units = ['M', 'B', 'T', 'Q'];
-    var unit = Math.floor((num / 1.0e1).toFixed(0).toString().length);
-    var r = unit % 3;
-    var x = Math.abs(Number(num)) / Number('1.0e+' + (unit - r));
-    return x.toFixed(2) + units[Math.floor(unit / 3) - 2];
-  }
-
-  // add comma as thousand seperator
-  const numberWithCommas = (num: number) => {
-    return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
 
   useEffect(() => {
     const filterData = (data: any) => {
@@ -58,44 +46,36 @@ const BasicInfo: React.FC<{ id: string }> = ({ id }) => {
 
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <img src={marketData?.image} className={classes.logo} />
-        <p style={{ fontWeight: '500' }}>{marketData?.name}</p>
+      <div className={classes.name}>
+        <img src={marketData?.image} />
+        <p>{marketData?.name}</p>
       </div>
       <p>
-        <span style={{ fontWeight: '300' }}>Price</span>:{' '}
-        <span style={{ fontWeight: '500' }}>{marketData?.current_price}</span>
+        Price: <span>{marketData?.current_price}</span>
       </p>
       <p>
-        <span style={{ fontWeight: '300' }}>Change:</span>{' '}
-        <span style={{ color: style.change24h, fontWeight: '500' }}>
+        Change:{' '}
+        <span style={{ color: style.change24h }}>
           {marketData?.price_change_24h.toFixed(2)}
         </span>
       </p>
       <p>
-        <span style={{ fontWeight: '300' }}>%Change:</span>{' '}
-        <span style={{ color: style.changePerc24h, fontWeight: '500' }}>
+        %Change:{' '}
+        <span style={{ color: style.changePerc24h }}>
           {marketData?.price_change_percentage_24h.toFixed(2)}%
         </span>
       </p>
       <p>
-        <span style={{ fontWeight: '300' }}>Market cap:</span>{' '}
-        <span style={{ fontWeight: '500' }}>{marketData?.market_cap}</span>
+        Market Cap: <span>{marketData?.market_cap}</span>
       </p>
       <p>
-        <span style={{ fontWeight: '300' }}>Circulating supply:</span>{' '}
-        <span style={{ fontWeight: '500' }}>
-          {marketData?.circulating_supply}
-        </span>
+        Circulating Supply: <span>{marketData?.circulating_supply}</span>
       </p>
       <p>
-        <span style={{ fontWeight: '300' }}>Total volume:</span>{' '}
-        <span style={{ fontWeight: '500' }}>{marketData?.total_volume}</span>
+        Total Volume: <span>{marketData?.total_volume}</span>
       </p>
     </div>
   );
 };
 
-export default BasicInfo;
-
-// {' '} add space between words
+export default MarketData;

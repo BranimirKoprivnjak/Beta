@@ -37,7 +37,8 @@ const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
           <h2>Add a cryptocurrency</h2>
           <p>
             Add a cryptocurrencies you would like to track. We'll add it to your
-            personalized tab.
+            personalized tab. U can always sort them as u like with drag and
+            drop.
           </p>
         </div>
         <CryptoList
