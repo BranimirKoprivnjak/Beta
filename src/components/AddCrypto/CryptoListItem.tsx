@@ -1,8 +1,7 @@
-import { Crypto } from '../../models/models';
-
+import { CryptoItem } from '../../models/components/components-models';
 import classes from './CryptoListItem.module.css';
 
-const CryptoListItem: React.FC<Crypto> = props => {
+const CryptoListItem: React.FC<CryptoItem> = props => {
   const { id, name, image, onChange, isChecked } = props;
 
   return (

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCustomSelector } from '../../hooks/hooks';
-import { AvailableCryptos } from '../../models/models';
+import useHttp from '../../hooks/use-http';
+import { CryptoBasic } from '../../models/components/components-models';
 import CryptoListItem from './CryptoListItem';
 import Loader from '../UI/Loader';
 import ErrorUI from '../UI/ErrorUI';
-import useHttp from '../../hooks/use-http';
-
 import classes from './CryptoList.module.css';
 
 const CryptoList: React.FC<{
@@ -13,12 +12,10 @@ const CryptoList: React.FC<{
   onCheckedCryptos: React.Dispatch<React.SetStateAction<string[]>>;
 }> = ({ pagination, onCheckedCryptos }) => {
   const cryptocurrencies = useCustomSelector(
-    statePara => statePara.state.cryptocurrencies
+    state => state.crypto.cryptocurrencies
   );
   // list of all cryptos from api
-  const [availableCryptos, setAvailableCryptos] = useState<AvailableCryptos[]>(
-    []
-  );
+  const [availableCryptos, setAvailableCryptos] = useState<CryptoBasic[]>([]);
   const { isLoading, error, fetchData } = useHttp();
 
   const changeHandler = (id: string) => {
@@ -30,12 +27,12 @@ const CryptoList: React.FC<{
 
   useEffect(() => {
     const filterData = (data: any) => {
-      const filteredData: AvailableCryptos[] = [];
-      for (const item of data) {
-        const { id, image, name } = item;
-        filteredData.push({ id, image, name });
-      }
-      setAvailableCryptos(prev => [...prev, ...filteredData]);
+      const filteredData = data.map(({ id, name, image }: CryptoBasic) => ({
+        id,
+        name,
+        image,
+      }));
+      setAvailableCryptos(prev => prev.concat(filteredData));
     };
 
     fetchData(
@@ -56,7 +53,7 @@ const CryptoList: React.FC<{
           id={item.id}
           name={item.name}
           image={item.image}
-          isChecked={cryptocurrencies.includes(item.id)}
+          isChecked={cryptocurrencies.map(item => item.id).includes(item.id)}
           onChange={changeHandler}
         />
       ))}

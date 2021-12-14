@@ -1,32 +1,17 @@
-import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 
-export interface State {
-  cryptocurrencies: string[];
-  currency: string;
-}
-
-const initialState: State = {
-  cryptocurrencies: [],
-  currency: 'usd',
-};
-
-const stateSlice = createSlice({
-  name: 'state',
-  initialState: initialState,
-  reducers: {
-    changeCrypto(state: State, action: PayloadAction<string[]>) {
-      state.cryptocurrencies = action.payload;
-    },
-    updateCurrency(state: State, action: PayloadAction<string>) {
-      state.currency = action.payload;
-    },
-  },
-});
+import fiatReducer from './fiat-currency';
+import cryptoReducer from './cryptocurrencies';
+import modalReducer from './modal';
+import selectedReducer from './selected-chart';
 
 const store = configureStore({
-  reducer: { state: stateSlice.reducer },
+  reducer: {
+    crypto: cryptoReducer,
+    fiat: fiatReducer,
+    modal: modalReducer,
+    selected: selectedReducer,
+  },
 });
-
-export const stateActions = stateSlice.actions;
 
 export default store;

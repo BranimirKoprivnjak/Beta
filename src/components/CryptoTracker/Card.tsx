@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import MarketData from './MarketData';
 import classes from './Card.module.css';
@@ -6,19 +6,16 @@ import HistoryChart from '../Charts/HistoryChart';
 import OhlcChart from '../Charts/OhlcChart';
 import { useCustomSelector, useCustomDispatch } from '../../hooks/hooks';
 
-import { ItemTypes } from '../../models/models';
-import { CardProps } from '../../models/models';
-import { Item } from '../../models/models';
-import { stateActions } from '../../store/redux';
+import { ItemTypes, CardType } from '../../models/drag&drop/drag&drop-models';
+import { cryptoActions } from '../../store/cryptocurrencies';
+import { selectedActions } from '../../store/selected-chart';
+import ChartModal from '../UI/ChartModal';
 
-const Card: React.FC<CardProps> = memo(function CryptoItem({
-  id,
-  moveCard,
-  findCard,
-}) {
+const Card: React.FC<CardType> = memo(({ id, moveCard, findCard }) => {
+  const [chartModalIsShown, setChartModalIsShown] = useState<boolean>(false);
   const dispatch = useCustomDispatch();
   const cryptocurrencies = useCustomSelector(
-    statePara => statePara.state.cryptocurrencies
+    state => state.crypto.cryptocurrencies
   );
   const originalIndex = findCard(id).index;
   const [{ isDragging }, drag] = useDrag(
@@ -41,7 +38,7 @@ const Card: React.FC<CardProps> = memo(function CryptoItem({
     () => ({
       accept: ItemTypes.CARD,
       canDrop: () => false,
-      hover({ id: draggedId }: Item) {
+      hover({ id: draggedId }: { id: string }) {
         if (draggedId !== id) {
           const { index: overIndex } = findCard(id);
           moveCard(draggedId, overIndex);
@@ -54,8 +51,12 @@ const Card: React.FC<CardProps> = memo(function CryptoItem({
 
   const removeItemHandler = (id: string) => {
     dispatch(
-      stateActions.changeCrypto(cryptocurrencies.filter(item => item !== id))
+      cryptoActions.setCrypto(cryptocurrencies.filter(item => item.id !== id))
     );
+  };
+
+  const toggleModalHandler = () => {
+    setChartModalIsShown(prev => !prev);
   };
 
   return (
@@ -65,10 +66,27 @@ const Card: React.FC<CardProps> = memo(function CryptoItem({
       style={{ opacity }}
     >
       <MarketData id={id} />
-      <HistoryChart id={id} />
-      <OhlcChart id={id} />
+      <div
+        onClick={() => {
+          toggleModalHandler();
+          dispatch(selectedActions.setDetail('HistoryChart'));
+        }}
+      >
+        <HistoryChart id={id} cssClass="summary" />
+      </div>
+      <div
+        onClick={() => {
+          toggleModalHandler();
+          dispatch(selectedActions.setDetail('OhlcChart'));
+        }}
+      >
+        <OhlcChart id={id} cssClass="summary" />
+      </div>
       <div className={classes.toolbox}>
-        <div className={classes.settings}></div>
+        <div className={classes.settings} onClick={toggleModalHandler}></div>
+        {chartModalIsShown && (
+          <ChartModal id={id} onClose={toggleModalHandler} />
+        )}
         <a
           href="#"
           className={classes['close-button']}

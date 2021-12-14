@@ -1,33 +1,31 @@
-import React, { useState } from 'react';
 import { useCustomDispatch, useCustomSelector } from './hooks/hooks';
-
-import classes from './App.module.css';
-import Modal from './components/UI/Modal';
-import { stateActions } from './store/redux';
 import { SUPPORTED_CURRENCIES } from './config/config';
 import Container from './components/CryptoTracker/Container';
-
+import AddModal from './components/UI/AddModal';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { modalActions } from './store/modal';
+import { fiatActions } from './store/fiat-currency';
+import classes from './App.module.css';
 
-const App = () => {
-  const cryptocurrencies = useCustomSelector(s => s.state.cryptocurrencies);
+const App: React.FC = () => {
+  const {
+    crypto: { cryptocurrencies },
+    modal: { addModalIsShown },
+  } = useCustomSelector(state => state);
   const dispatch = useCustomDispatch();
 
-  const isEmpty = cryptocurrencies.length ? false : true;
-  const [modalIsShown, setModalIsShown] = useState(isEmpty);
-
   const currencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    dispatch(stateActions.updateCurrency(event.currentTarget.value));
+    dispatch(fiatActions.setFiatCurrency(event.currentTarget.value));
   };
 
   const toggleModalHandler = () => {
-    setModalIsShown(prev => !prev);
+    dispatch(modalActions.toggleAddModal());
   };
 
   return (
     <DndProvider backend={HTML5Backend}>
-      {modalIsShown && <Modal onClose={toggleModalHandler} />}
+      {addModalIsShown && <AddModal />}
       <div className={classes.toolbar}>
         <p>My cryptocurrencies({cryptocurrencies.length})</p>
         <div className={classes.utility}>

@@ -1,26 +1,63 @@
 import { useEffect, useState } from 'react';
 import { useCustomSelector } from '../../hooks/hooks';
-import { getNumber, numberWithCommas } from '../../helpers/helpers';
 import useHttp from '../../hooks/use-http';
-
+import { getNumber, numberWithCommas } from '../../helpers/helpers';
+import { MarketDataType } from '../../models/components/components-models';
 import classes from './MarketData.module.css';
 
 const MarketData: React.FC<{ id: string }> = ({ id }) => {
-  const currency = useCustomSelector(statePara => statePara.state.currency);
-  const [marketData, setMarketData] = useState<any>();
+  const currency = useCustomSelector(state => state.fiat.fiatCurrency);
+  const [marketData, setMarketData] = useState<MarketDataType>();
+  const [styles, setStyles] = useState<{
+    change24h: string;
+    changePerc24h: string;
+  }>({ change24h: '', changePerc24h: '' });
 
   const { fetchData } = useHttp();
 
   useEffect(() => {
     const filterData = (data: any) => {
-      const [market_data] = data;
-      market_data.market_cap = getNumber(market_data.market_cap);
-      market_data.current_price = numberWithCommas(market_data.current_price);
-      market_data.circulating_supply = getNumber(
-        market_data.circulating_supply
+      const [dataObj] = data;
+      const {
+        id,
+        name,
+        image,
+        current_price: price,
+        price_change_24h: change24h,
+        price_change_percentage_24h: changePerc24h,
+        market_cap: marketCap,
+        circulating_supply: circulatingSupply,
+        total_volume: totalVolume,
+      } = dataObj;
+
+      const filteredData: MarketDataType = {
+        id,
+        name,
+        image,
+        price,
+        change24h,
+        changePerc24h,
+        marketCap,
+        circulatingSupply,
+        totalVolume,
+      };
+
+      filteredData.marketCap = getNumber(+filteredData.marketCap);
+      filteredData.price = numberWithCommas(+filteredData.price);
+      filteredData.circulatingSupply = getNumber(
+        +filteredData.circulatingSupply
       );
-      market_data.total_volume = getNumber(market_data.total_volume);
-      setMarketData(market_data);
+      filteredData.totalVolume = getNumber(+filteredData.totalVolume);
+
+      setMarketData(filteredData);
+
+      const green = 'rgb(110, 255, 174)',
+        red = 'rgb(241, 43, 66)';
+
+      setStyles({
+        change24h: change24h > 0 ? green : red,
+        changePerc24h: changePerc24h > 0 ? green : red,
+      });
     };
 
     fetchData(
@@ -31,48 +68,35 @@ const MarketData: React.FC<{ id: string }> = ({ id }) => {
     );
   }, [id, currency, fetchData]);
 
-  // idea -> put this in reducer or state
-  let style = { change24h: '', changePerc24h: '' };
-  if (marketData !== undefined) {
-    style.change24h =
-      marketData?.price_change_24h > 0
-        ? 'rgb(110, 255, 174)'
-        : 'rgb(241, 43, 66)';
-    style.changePerc24h =
-      marketData?.price_change_percentage_24h > 0
-        ? 'rgb(110, 255, 174)'
-        : 'rgb(241, 43, 66)';
-  }
-
   return (
     <div className={classes.container}>
       <div className={classes.name}>
-        <img src={marketData?.image} />
+        <img src={marketData?.image} alt={`${marketData?.name} logo`} />
         <p>{marketData?.name}</p>
       </div>
       <p>
-        Price: <span>{marketData?.current_price}</span>
+        Price: <span>{marketData?.price}</span>
       </p>
       <p>
         Change:{' '}
-        <span style={{ color: style.change24h }}>
-          {marketData?.price_change_24h.toFixed(2)}
+        <span style={{ color: styles.change24h }}>
+          {marketData?.change24h.toFixed(2)}
         </span>
       </p>
       <p>
         %Change:{' '}
-        <span style={{ color: style.changePerc24h }}>
-          {marketData?.price_change_percentage_24h.toFixed(2)}%
+        <span style={{ color: styles.changePerc24h }}>
+          {marketData?.changePerc24h.toFixed(2)}%
         </span>
       </p>
       <p>
-        Market Cap: <span>{marketData?.market_cap}</span>
+        Market Cap: <span>{marketData?.marketCap}</span>
       </p>
       <p>
-        Circulating Supply: <span>{marketData?.circulating_supply}</span>
+        Circulating Supply: <span>{marketData?.circulatingSupply}</span>
       </p>
       <p>
-        Total Volume: <span>{marketData?.total_volume}</span>
+        Total Volume: <span>{marketData?.totalVolume}</span>
       </p>
     </div>
   );

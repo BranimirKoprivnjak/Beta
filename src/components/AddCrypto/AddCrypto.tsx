@@ -1,28 +1,46 @@
-import React, { useState } from 'react';
-import { useCustomDispatch, useCustomSelector } from '../../hooks/hooks';
-import { OnClose } from '../../models/models';
-import classes from './AddCrypto.module.css';
-import { stateActions } from '../../store/redux';
+import { useState } from 'react';
+import { useCustomSelector, useCustomDispatch } from '../../hooks/hooks';
 import Button from '../UI/Button';
 import CryptoList from './CryptoList';
+import { cryptoActions } from '../../store/cryptocurrencies';
+import { modalActions } from '../../store/modal';
+import classes from './AddCrypto.module.css';
 
-const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
+const AddCrypto: React.FC = () => {
   const dispatch = useCustomDispatch();
   const cryptocurrencies = useCustomSelector(
-    statePara => statePara.state.cryptocurrencies
+    state => state.crypto.cryptocurrencies
   );
   const [pagination, setPagination] = useState<number>(1);
   // picked cryptos
-  const [checkedCryptos, setCheckedCryptos] =
-    useState<string[]>(cryptocurrencies);
+  const [checkedCryptos, setCheckedCryptos] = useState<string[]>(
+    cryptocurrencies.map(item => item.id)
+  );
 
   const addCryptoHandler = () => {
-    dispatch(stateActions.changeCrypto(checkedCryptos));
-    onClose();
+    dispatch(
+      cryptoActions.updateCrypto(
+        checkedCryptos.map(crypto => ({
+          id: crypto,
+          historyChart: {
+            options: {
+              interval: 14,
+              type: 'line',
+            },
+          },
+          ohlcChart: {
+            options: {
+              interval: 14,
+            },
+          },
+        }))
+      )
+    );
+    dispatch(modalActions.toggleAddModal());
   };
 
-  const scrollHandler = (e: React.UIEvent<HTMLDivElement>) => {
-    const target = e.currentTarget;
+  const scrollHandler = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.currentTarget;
     if (target.scrollHeight - target.scrollTop === target.clientHeight)
       setPagination(prev => prev + 1);
   };
@@ -37,7 +55,7 @@ const AddCrypto: React.FC<OnClose> = ({ onClose }) => {
           <h2>Add a cryptocurrency</h2>
           <p>
             Add a cryptocurrencies you would like to track. We'll add it to your
-            personalized tab. U can always sort them as u like with drag and
+            personalized tab. You can always sort them as you like with drag and
             drop.
           </p>
         </div>

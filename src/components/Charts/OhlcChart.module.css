@@ -1,0 +1,12 @@
+.chart-summary {
+  position: relative;
+  width: 28vw;
+  height: 275px;
+  cursor: pointer;
+}
+
+.chart-detail {
+  position: relative;
+  width: 80rem;
+  height: 50rem;
+}

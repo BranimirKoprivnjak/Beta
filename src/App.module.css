@@ -30,10 +30,3 @@
 .button:hover {
   text-decoration: underline solid rgb(74, 183, 255);
 }
-
-.cryptos {
-  width: 70%;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}

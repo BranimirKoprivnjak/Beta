@@ -1,31 +1,45 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import useHttp from '../../hooks/use-http';
 import { useCustomSelector } from '../../hooks/hooks';
+import classes from './HistoryChart.module.css';
 
 import { Chart, ChartType, ChartData, registerables } from 'chart.js';
 Chart.register(...registerables);
 
-const lineChartType: ChartType = 'line';
-
-const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
+const HistoryChart: React.FC<{
+  id: string;
+  cssClass: string;
+}> = ({ id, cssClass }) => {
   const chart = useRef<Chart | null>(null);
   const [prices, setPrices] = useState<number[]>([]);
   const [dates, setDates] = useState<number[]>([]);
 
   const { fetchData } = useHttp();
-  const currency = useCustomSelector(statePara => statePara.state.currency);
+  const currency = useCustomSelector(state => state.fiat.fiatCurrency);
+  const [crypto] = useCustomSelector(state =>
+    state.crypto.cryptocurrencies.filter(item => item.id === id)
+  );
 
-  const formatOptions = (data: number[]): ChartData => ({
-    labels: dates,
-    datasets: [
-      {
-        label: 'Price',
-        data,
-        backgroundColor: 'rgba(140, 63, 79, 1)',
-        borderColor: 'rgba(140, 63, 79, 1)',
-      },
-    ],
-  });
+  const { interval, type: chartType } = crypto.historyChart.options;
+
+  const lineChartType: ChartType = chartType;
+
+  const formatOptions = useCallback(
+    (data: number[]): ChartData => ({
+      labels: dates,
+      datasets: [
+        {
+          label: 'Price',
+          data,
+          backgroundColor: 'rgba(140, 63, 79, 0.2)',
+          borderColor: 'rgba(140, 63, 79, 1)',
+          fill: true,
+          // pointRadius: 0,
+        },
+      ],
+    }),
+    [dates]
+  );
 
   const canvasCallback = useCallback((canvas: HTMLCanvasElement | null) => {
     if (!canvas) return;
@@ -40,6 +54,9 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
           scales: {
             x: {
               type: 'timeseries',
+              time: {
+                minUnit: 'day',
+              },
               ticks: {
                 // autoSkip: true,
                 // display: false,
@@ -66,6 +83,11 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
               text: 'History Chart',
             },
           },
+          // elements: {
+          //   point: {
+          //     radius: 0,
+          //   },
+          // },
         },
       });
     }
@@ -75,7 +97,7 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
     const filterData = (data: any) => {
       const chartData = [],
         chartLabels = [];
-      for (const value of data?.prices) {
+      for (const value of data.prices) {
         const [dates, price] = value;
         chartData.push(+price.toFixed(2));
         chartLabels.push(dates);
@@ -90,11 +112,11 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
 
     fetchData(
       {
-        url: `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=14&interval=daily`,
+        url: `https://api.coingecko.com/api/v3/coins/${id}/market_chart?vs_currency=${currency}&days=${interval}&interval=daily`,
       },
       filterData
     );
-  }, [id, currency, fetchData]);
+  }, [id, currency, fetchData, interval]);
 
   useEffect(() => {
     if (chart.current) {
@@ -102,10 +124,10 @@ const HistoryChart: React.FC<{ id: string }> = ({ id }) => {
       chart.current.data.labels = dates;
       chart.current.update();
     }
-  }, [prices, dates]);
+  }, [prices, dates, formatOptions]);
 
   return (
-    <div style={{ position: 'relative', width: '28vw', height: '275px' }}>
+    <div className={classes[`chart-${cssClass}`]}>
       <canvas ref={canvasCallback} id={`history-chart-${id}`}></canvas>
     </div>
   );
