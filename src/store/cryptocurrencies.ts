@@ -29,7 +29,9 @@ const cryptoSlice = createSlice({
         // if index exists, slice crypto from payload
         if (index !== -1) payload.splice(index, 1);
         // if crypto doesnt exists, slice it from state
-        else cryptos.splice(i, 1);
+        else {
+          cryptos.splice(i, 1);
+        }
       });
 
       // push new cryptos from paylaod
@@ -46,7 +48,7 @@ const cryptoSlice = createSlice({
 
     updateDays(
       state: Cryptocurrencies,
-      action: PayloadAction<{ id: string; interval: number; chartName: string }>
+      action: PayloadAction<{ id: string; interval: string; chartName: string }>
     ) {
       const cryptos = state.cryptocurrencies;
       const { id, interval, chartName } = action.payload;

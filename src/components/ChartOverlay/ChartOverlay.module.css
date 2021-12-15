@@ -1,0 +1,46 @@
+.title {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-left: 0.24rem;
+  padding-bottom: 0.3rem;
+}
+
+.dropdown {
+  background-color: rgba(28, 31, 32, 1);
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.8rem;
+}
+
+.list {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list li {
+  color: white;
+  padding: 0.2rem 0.3rem 0.3rem 0.3rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  font-weight: 300;
+}
+
+.picked {
+  background-color: rgb(74, 80, 83);
+  transition: 0.2s;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.interval {
+  padding: 0.2rem 0.3rem 0.3rem 0.3rem;
+  font-weight: 400;
+  color: white;
+}

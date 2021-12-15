@@ -24,13 +24,13 @@ const AddCrypto: React.FC = () => {
           id: crypto,
           historyChart: {
             options: {
-              interval: 14,
+              interval: '14',
               type: 'line',
             },
           },
           ohlcChart: {
             options: {
-              interval: 14,
+              interval: '14',
             },
           },
         }))

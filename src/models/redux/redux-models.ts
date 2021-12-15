@@ -6,13 +6,13 @@ export interface Cryptocurrency {
   id: string;
   historyChart: {
     options: {
-      interval: number;
+      interval: string;
       type: keyof ChartTypeRegistry;
     };
   };
   ohlcChart: {
     options: {
-      interval: number;
+      interval: string;
     };
   };
 }

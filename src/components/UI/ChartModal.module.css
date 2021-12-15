@@ -23,9 +23,9 @@
 
 @media (min-width: 768px) {
   .modal {
-    width: 80rem;
+    width: 65rem;
     /* Always calculate middle */
-    left: calc(50% - 42.2rem);
+    left: calc(50% - 32.5rem);
   }
 }
 

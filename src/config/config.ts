@@ -8,4 +8,4 @@ export const SUPPORTED_CURRENCIES = [
   'chf',
 ];
 
-export const SUPPORTED_INTERVALS = [7, 14, 30, 60, 90, 180, 365];
+export const SUPPORTED_INTERVALS = ['7', '14', '30', '90', '180', '365', 'max'];

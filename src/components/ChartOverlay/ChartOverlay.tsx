@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCustomDispatch, useCustomSelector } from '../../hooks/hooks';
 import { cryptoActions } from '../../store/cryptocurrencies';
 import HistoryChart from '../Charts/HistoryChart';
 import OhlcChart from '../Charts/OhlcChart';
 import { SUPPORTED_INTERVALS } from '../../config/config';
+import classes from './ChartOverlay.module.css';
 
-const ChartOverlay: React.FC<{ id: string }> = props => {
-  const detail = useCustomSelector(state => state.selected.selectedChart);
+const ChartOverlay: React.FC<{ id: string }> = ({ id }) => {
+  const selectedChart = useCustomSelector(
+    state => state.selected.selectedChart
+  );
   const dispatch = useCustomDispatch();
-  const [selectedComponent, setSelectedComponent] = useState<string>(detail);
+  const [selectedComponent, setSelectedComponent] =
+    useState<string>(selectedChart);
 
   const [crypto] = useCustomSelector(state =>
-    state.crypto.cryptocurrencies.filter(item => item.id === props.id)
+    state.crypto.cryptocurrencies.filter(item => item.id === id)
   );
 
   const { historyChart, ohlcChart } = crypto;
@@ -25,45 +29,47 @@ const ChartOverlay: React.FC<{ id: string }> = props => {
     setSelectedComponent(event.currentTarget.value);
   };
 
-  const intervalChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const clickHandler = (interval: string) => {
     dispatch(
       cryptoActions.updateDays({
-        interval: +event.currentTarget.value,
-        id: props.id,
-        chartName: detail,
+        interval,
+        id,
+        chartName: selectedComponent,
       })
     );
   };
 
-  // const typeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  //   dispatch(
-  //     cryptoActions.updateType({
-  //       id: props.id,
-  //       type: event.currentTarget.value as keyof ChartTypeRegistry,
-  //     })
-  //   );
-  // };
-
   return (
     <>
-      <select value={selectedComponent} onChange={changeHandler}>
-        <option value="HistoryChart">History Chart</option>
-        <option value="OhlcChart">Ohlc Chart</option>
-      </select>
-      <select value={interval} onChange={intervalChange}>
-        {SUPPORTED_INTERVALS.map(value => (
-          <option key={value}>{value}</option>
-        ))}
-      </select>
-      {/* <select value={type} onChange={typeChange}>
-        <option value="bar">bar</option>
-        <option value="line">line</option>
-      </select> */}
+      <h2 className={classes.title}>{id}</h2>
+      <div className={classes.toolbar}>
+        <select
+          className={classes.dropdown}
+          value={selectedComponent}
+          onChange={changeHandler}
+        >
+          <option value="HistoryChart">History Chart</option>
+          <option value="OhlcChart">Ohlc Chart</option>
+        </select>
+        <p className={classes.interval}>Interval:</p>
+        <ul className={classes.list}>
+          {SUPPORTED_INTERVALS.map(int => (
+            <li
+              key={int}
+              value={int}
+              className={interval === int ? classes.picked : ''}
+              onClick={clickHandler.bind(null, int)}
+            >
+              {int}
+            </li>
+          ))}
+        </ul>
+      </div>
       {selectedComponent === 'HistoryChart' && (
-        <HistoryChart id={props.id} cssClass="detail" />
+        <HistoryChart id={id} cssClass="detail" />
       )}
       {selectedComponent === 'OhlcChart' && (
-        <OhlcChart id={props.id} cssClass="detail" />
+        <OhlcChart id={id} cssClass="detail" />
       )}
     </>
   );
