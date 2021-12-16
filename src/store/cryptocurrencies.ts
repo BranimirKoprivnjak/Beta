@@ -22,7 +22,7 @@ const cryptoSlice = createSlice({
 
       const deepCryptos = cloneDeep(cryptos);
 
-      deepCryptos.forEach((_, i) => {
+      for (let i = 0; i < cryptos.length; i++) {
         const index = payload.findIndex(
           crypto => crypto.id === deepCryptos[i].id
         );
@@ -31,8 +31,9 @@ const cryptoSlice = createSlice({
         // if crypto doesnt exists, slice it from state
         else {
           cryptos.splice(i, 1);
+          i--;
         }
-      });
+      }
 
       // push new cryptos from paylaod
       payload.forEach(newCrypto => cryptos.push(newCrypto));

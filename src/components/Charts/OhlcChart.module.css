@@ -1,6 +1,6 @@
 .chart-summary {
   position: relative;
-  width: 28vw;
+  width: 26vw;
   height: 275px;
   cursor: pointer;
 }
@@ -8,5 +8,5 @@
 .chart-detail {
   position: relative;
   width: 65rem;
-  height: 40rem;
+  height: 70vh;
 }
