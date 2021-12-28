@@ -8,6 +8,7 @@ export interface Cryptocurrency {
     options: {
       interval: string;
       type: keyof ChartTypeRegistry;
+      color: string;
     };
   };
   ohlcChart: {

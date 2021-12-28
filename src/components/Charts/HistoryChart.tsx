@@ -1,9 +1,11 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import useHttp from '../../hooks/use-http';
 import { useCustomSelector } from '../../hooks/hooks';
+import { hexToRgb } from '../../helpers/helpers';
 import classes from './HistoryChart.module.css';
 
-import { Chart, ChartType, ChartData, registerables } from 'chart.js';
+import { Chart, ChartData, registerables } from 'chart.js';
+
 Chart.register(...registerables);
 
 const HistoryChart: React.FC<{
@@ -20,9 +22,13 @@ const HistoryChart: React.FC<{
     state.crypto.cryptocurrencies.filter(item => item.id === id)
   );
 
-  const { interval, type: chartType } = crypto.historyChart.options;
+  const { interval, type: chartType, color } = crypto.historyChart.options;
 
-  const lineChartType: ChartType = chartType;
+  const [borderColor, lineBackgroundColor, barBackgroundColor] =
+    hexToRgb(color);
+
+  const backgroundColor =
+    chartType === 'bar' ? barBackgroundColor : lineBackgroundColor;
 
   const formatOptions = useCallback(
     (data: number[]): ChartData => ({
@@ -31,14 +37,14 @@ const HistoryChart: React.FC<{
         {
           label: 'Price',
           data,
-          backgroundColor: 'rgba(140, 63, 79, 0.2)',
-          borderColor: 'rgba(140, 63, 79, 1)',
+          backgroundColor,
+          borderColor,
           fill: true,
           // pointRadius: 0,
         },
       ],
     }),
-    [dates]
+    [dates, backgroundColor, borderColor]
   );
 
   const canvasCallback = useCallback((canvas: HTMLCanvasElement | null) => {
@@ -46,16 +52,17 @@ const HistoryChart: React.FC<{
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (ctx) {
       chart.current = new Chart(ctx, {
-        type: lineChartType,
+        type: 'line',
         data: formatOptions(prices),
         options: {
           // responsive: true,
           maintainAspectRatio: false,
           scales: {
             x: {
-              type: 'timeseries',
+              type: 'time',
               time: {
                 minUnit: 'day',
+                round: 'day',
               },
               ticks: {
                 // autoSkip: true,
@@ -67,6 +74,8 @@ const HistoryChart: React.FC<{
               grid: {
                 display: false,
               },
+              // bounds: 'ticks',
+              // offset: true,
             },
             y: {
               grid: {
@@ -119,12 +128,37 @@ const HistoryChart: React.FC<{
   }, [id, currency, fetchData, interval]);
 
   useEffect(() => {
-    if (chart.current) {
-      chart.current.data = formatOptions(prices);
-      chart.current.data.labels = dates;
-      chart.current.update();
-    }
-  }, [prices, dates, formatOptions]);
+    if (!chart.current) return;
+    chart.current.data = formatOptions(prices);
+    chart.current.update('none');
+  }, [formatOptions]);
+
+  // chart color change
+  useEffect(() => {
+    if (!chart.current) return;
+    chart.current.update('none');
+  }, [backgroundColor, borderColor]);
+
+  // on interval change, update prices and corresponding dates
+  useEffect(() => {
+    if (!chart.current) return;
+    chart.current.data = formatOptions(prices);
+    chart.current.update();
+  }, [prices, dates]);
+
+  // chart type change
+  useEffect(() => {
+    if (!chart.current) return;
+    chart.current.config.type = chartType;
+    chart.current.update();
+  }, [chartType]);
+
+  // default type is line, update on render based on redux state
+  useEffect(() => {
+    if (!chart.current) return;
+    chart.current.config.type = chartType;
+    chart.current.update();
+  }, []);
 
   return (
     <div className={classes[`chart-${cssClass}`]}>

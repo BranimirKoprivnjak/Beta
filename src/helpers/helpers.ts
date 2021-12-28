@@ -10,3 +10,21 @@ export const getNumber = (num: number) => {
 export const numberWithCommas = (num: number) => {
   return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
+
+// convert hex to rgb
+export const hexToRgb = (hex: any) => {
+  const rgb = hex
+    .replace(
+      /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+      (m: any, r: any, g: any, b: any) => '#' + r + r + g + g + b + b
+    )
+    .substring(1)
+    .match(/.{2}/g)
+    .map((x: any) => parseInt(x, 16));
+
+  return [
+    'rgba(' + rgb.join(', ') + ', 1)',
+    'rgba(' + rgb.join(', ') + ', 0.2)',
+    'rgba(' + rgb.join(', ') + ', 0.7)',
+  ];
+};

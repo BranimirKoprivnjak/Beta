@@ -26,6 +26,8 @@ const AddCrypto: React.FC = () => {
             options: {
               interval: '14',
               type: 'line',
+              color: '#8c3f4f',
+              // backgroundColor: 'rgba(140, 63, 79, 0.2)',
             },
           },
           ohlcChart: {

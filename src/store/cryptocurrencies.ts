@@ -47,7 +47,7 @@ const cryptoSlice = createSlice({
       state.cryptocurrencies = action.payload;
     },
 
-    updateDays(
+    updateInterval(
       state: Cryptocurrencies,
       action: PayloadAction<{ id: string; interval: string; chartName: string }>
     ) {
@@ -75,6 +75,19 @@ const cryptoSlice = createSlice({
 
       const cryptoIndex = cryptos[index];
       cryptoIndex.historyChart.options.type = chartType;
+    },
+
+    updateChartColor(
+      state: Cryptocurrencies,
+      action: PayloadAction<{ id: string; color: string }>
+    ) {
+      const cryptos = state.cryptocurrencies;
+      const { id, color } = action.payload;
+
+      const index = cryptos.findIndex(crypto => crypto.id === id);
+
+      const cryptoIndex = cryptos[index];
+      cryptoIndex.historyChart.options.color = color;
     },
   },
 });
